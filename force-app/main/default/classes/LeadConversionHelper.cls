@@ -12,7 +12,7 @@ public without sharing class LeadConversionHelper {
             // Get leads to convert
             List<Lead> leadsToConvert = [SELECT Id, IsConverted FROM Lead WHERE Id IN :validLeadIds];         
             
-            // Filter out leads that are already converted
+            // Filter out leads that are already converted to prevent errors
             List<Lead> leadsToProcess = new List<Lead>();
             for (Lead ld : leadsToConvert) {
                 if (!ld.IsConverted) {
@@ -20,7 +20,7 @@ public without sharing class LeadConversionHelper {
                 }
             }
             // Create lead convert object
-            List<Database.LeadConvert> LeadConvertList = new List<Database.LeadConvert>();
+            List<Database.LeadConvert> leadConvertList = new List<Database.LeadConvert>();
             for (Lead lead: leadsToProcess){
                 Database.LeadConvert lc = new Database.LeadConvert();
                 lc.setLeadId(lead.Id);
