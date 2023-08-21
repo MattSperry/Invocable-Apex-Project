@@ -1,5 +1,5 @@
-@isTest
-public class LeadConversionTest {
+@IsTest
+private class LeadConversionTest {
   @TestSetup
   static void makeData() {
     // Create test data for Lead Conversion Requests
@@ -10,7 +10,7 @@ public class LeadConversionTest {
     Contact c = new Contact(FirstName = 'Matt', LastName = 'Sperry', AccountId = acc.Id);
     insert c;
   }
-  @isTest
+  @IsTest
   static void testLeadConversionWithOpp() {
     // Create Lead Conversion Request
     LeadConversion.LeadConversionRequest request = new LeadConversion.LeadConversionRequest();
@@ -24,12 +24,8 @@ public class LeadConversionTest {
     List<LeadConversion.LeadConversionRequest> requests = new List<LeadConversion.LeadConversionRequest>();
     requests.add(request);
 
-    // Get lead
-    Lead leadToUpdate = [SELECT Id, Convert__c FROM Lead WHERE LastName = 'Sperry' LIMIT 1];
-
     // Update lead and call the convertLeads method
     Test.startTest();
-    leadToUpdate.Convert__c = true;
     LeadConversion.convertLeads(requests);
     Test.stopTest();
 
@@ -43,7 +39,7 @@ public class LeadConversionTest {
     System.assertEquals(1, newOpportunities.size(), 'Opportunity should be created');
   }
 
-  @isTest
+  @IsTest
   static void testLeadConversionNoOpp() {
     LeadConversion.LeadConversionRequest request = new LeadConversion.LeadConversionRequest();
     request.leadId = [SELECT Id FROM Lead WHERE LastName = 'Sperry' LIMIT 1].Id;
@@ -54,13 +50,9 @@ public class LeadConversionTest {
     List<LeadConversion.LeadConversionRequest> requests = new List<LeadConversion.LeadConversionRequest>();
     requests.add(request);
 
-    // Get lead
-    Lead leadToUpdate = [SELECT Id, Convert__c FROM Lead WHERE LastName = 'Sperry' LIMIT 1];
-
     // Update lead and call the convertLeads method
     Test.startTest();
-    leadToUpdate.Convert__c = true;
-    update leadToUpdate;
+    LeadConversion.convertLeads(requests);
     Test.stopTest();
 
     // Make sure Opportunity is generated

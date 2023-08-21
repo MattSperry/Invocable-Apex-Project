@@ -1,16 +1,23 @@
 public without sharing class LeadConversion {
-  @InvocableMethod(Label='Convert Leads')
+  @InvocableMethod(
+    label='Convert Leads'
+    description='Converts leads allowing dynamic assignment of Contacts, Accoutns, and Opportunities'
+  )
   public static void convertLeads(List<LeadConversionRequest> requests) {
     // Get leads to convert
-    List<Lead> leadsToConvert = [SELECT Id, IsConverted FROM Lead];
-
-    // Filter out leads that are already converted to prevent errors
-    List<Lead> leadsToProcess = new List<Lead>();
-    for (Lead ld : leadsToConvert) {
-      if (!ld.IsConverted) {
-        leadsToProcess.add(ld);
-      }
+    Set<ID> leadIds = new Set<ID>();
+    for (LeadConversionRequest lcr : requests) {
+      leadIds.add(lcr.leadId);
     }
+
+    List<Lead> leadsToConvert = [
+      SELECT Id, IsConverted
+      FROM Lead
+      WHERE Id IN :leadIds AND IsConverted = FALSE
+    ];
+
+    LeadStatus convertStatus = [SELECT Id, MasterLabel FROM LeadStatus WHERE IsConverted = TRUE LIMIT 1];
+
     // Create list to store lead conversion requests
     List<Database.LeadConvert> leadConvertList = new List<Database.LeadConvert>();
 
@@ -18,7 +25,7 @@ public without sharing class LeadConversion {
     for (LeadConversionRequest lcr : requests) {
       Database.LeadConvert lc = new Database.LeadConvert();
       lc.setLeadId(lcr.leadId);
-      lc.setConvertedStatus('Closed - Converted');
+      lc.setConvertedStatus(convertStatus.MasterLabel);
       lc.setDoNotCreateOpportunity(lcr.noOpportunityCreation);
       System.debug('Do Not Create Opportunity value: ' + lc.isDoNotCreateOpportunity());
       if (lcr.accountId != null) {
@@ -32,7 +39,7 @@ public without sharing class LeadConversion {
       }
       leadConvertList.add(lc);
     }
-    //Preform lead conversion
+    //Perform lead conversion
     List<Database.LeadConvertResult> convertResults = new List<Database.LeadConvertResult>();
     if (!leadConvertList.isEmpty()) {
       convertResults = Database.convertLead(leadConvertList);
