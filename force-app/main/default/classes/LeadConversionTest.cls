@@ -21,8 +21,7 @@ private class LeadConversionTest {
     request.noOpportunityCreation = false;
 
     // Create a list of requests
-    List<LeadConversion.LeadConversionRequest> requests = new List<LeadConversion.LeadConversionRequest>();
-    requests.add(request);
+    List<LeadConversion.LeadConversionRequest> requests = new List<LeadConversion.LeadConversionRequest>{ request };
 
     // Update lead and call the convertLeads method
     Test.startTest();
@@ -47,8 +46,7 @@ private class LeadConversionTest {
     request.noOpportunityCreation = true;
 
     // Create a list of requests
-    List<LeadConversion.LeadConversionRequest> requests = new List<LeadConversion.LeadConversionRequest>();
-    requests.add(request);
+    List<LeadConversion.LeadConversionRequest> requests = new List<LeadConversion.LeadConversionRequest>{ request };
 
     // Update lead and call the convertLeads method
     Test.startTest();
